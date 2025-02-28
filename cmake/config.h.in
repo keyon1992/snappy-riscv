@@ -62,6 +62,9 @@
    compression speed by using __crc32cw from <arm_acle.h>. */
 #cmakedefine01 SNAPPY_HAVE_NEON_CRC32
 
+/* Define to 1 if you target processors with RVV and have <riscv_vector.h>. */
+#cmakedefine01 SNAPPY_HAVE_RVV
+
 /* Define to 1 if your processor stores words with the most significant byte
    first (like Motorola and SPARC, unlike Intel and VAX). */
 #cmakedefine01 SNAPPY_IS_BIG_ENDIAN

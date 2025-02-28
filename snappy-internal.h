@@ -46,7 +46,11 @@
 #include <arm_neon.h>
 #endif
 
-#if SNAPPY_HAVE_SSSE3 || SNAPPY_HAVE_NEON
+#if SNAPPY_HAVE_RVV
+#include <riscv_vector.h>
+#endif
+
+#if SNAPPY_HAVE_SSSE3 || SNAPPY_HAVE_NEON || SNAPPY_HAVE_RVV
 #define SNAPPY_HAVE_VECTOR_BYTE_SHUFFLE 1
 #else
 #define SNAPPY_HAVE_VECTOR_BYTE_SHUFFLE 0
@@ -60,6 +64,8 @@ namespace internal {
 using V128 = __m128i;
 #elif SNAPPY_HAVE_NEON
 using V128 = uint8x16_t;
+#elif SNAPPY_HAVE_RVV
+using V128 = vuint8m1_t;
 #endif
 
 // Load 128 bits of integer data. `src` must be 16-byte aligned.
@@ -110,6 +116,27 @@ inline V128 V128_Shuffle(V128 input, V128 shuffle_mask) {
 }
 
 inline V128 V128_DupChar(char c) { return vdupq_n_u8(c); }
+
+#elif SNAPPY_HAVE_RVV
+inline V128 V128_Load(const V128* src) {
+  return __riscv_vle8_v_u8m1(reinterpret_cast<const uint8_t*>(src), 16);
+}
+
+inline V128 V128_LoadU(const V128* src) {
+  return __riscv_vle8_v_u8m1(reinterpret_cast<const uint8_t*>(src), 16);
+}
+
+inline void V128_StoreU(V128* dst, V128 val) {
+  __riscv_vse8_v_u8m1(reinterpret_cast<uint8_t*>(dst), val, 16);
+}
+
+inline V128 V128_Shuffle(V128 input, V128 shuffle_mask) {
+  return __riscv_vrgather_vv_u8m1(input, shuffle_mask, 16);
+}
+
+inline V128 V128_DupChar(char c) { 
+  return __riscv_vmv_v_x_u8m1(c, 16);
+}
 #endif
 #endif  // SNAPPY_HAVE_VECTOR_BYTE_SHUFFLE
 

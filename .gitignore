@@ -5,6 +5,7 @@
 
 # Build directory.
 build/
+build_rv/
 /bazel-*
 MODULE.bazel.lock
 out/

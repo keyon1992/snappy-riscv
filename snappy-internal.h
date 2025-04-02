@@ -65,7 +65,9 @@ using V128 = __m128i;
 #elif SNAPPY_HAVE_NEON
 using V128 = uint8x16_t;
 #elif SNAPPY_HAVE_RVV
-using V128 = vuint8m1_t;
+typedef vuint8m1_t vuint8x16_t
+    __attribute__((riscv_rvv_vector_bits(128)));
+using V128 = vuint8x16_t;
 #endif
 
 // Load 128 bits of integer data. `src` must be 16-byte aligned.
